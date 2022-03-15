@@ -9,6 +9,19 @@
 .DATA
 ;=======================================================================
 ;---------------------------------------------------------
+COUNT DW 0
+COUNT2 DW 0
+COUNT3 DW 0
+COUNT4 DW 0
+TEMP1 DW 0
+TEMP2 DW 0
+TEMP3 DW 0
+TEMPDB1 DB 0
+TEMPDB2 DW 0
+TEMPDB3 DW 0
+VIDEO_SEG 	SEGMENT AT 0A000H
+VID_AREA	DB		1000 DUP (?) ;Esto se comentará temporalmente
+VIDEO_SEG 	ENDS
 ;---------------------------------------------------------
 ;=========================================================
 .CODE
@@ -38,6 +51,12 @@ RET
 MSJSHOW MACRO MSJ ;Función que se encarga de mostrar una cadena en pantalla
 MOV AH, 09H
 LEA DX, [MSJ]
+INT 21H
+ENDM
+;---------------------------------------------------------
+SCREEN_CHAR_PRINT MACRO CHAR
+MOV DL, CHAR
+MOV AH, 02H
 INT 21H
 ENDM
 ;---------------------------------------------------------
@@ -74,8 +93,8 @@ ENDM
 GRAPHIC_MODE PROC ;Procedimiento que ingresa al modo de video gráfico de 320x200
 AND BX, 00	
 MOV SI, 00
-MOV AH,00H					
-MOV AL,13H
+MOV AH, 00H					
+MOV AL, 13H
 INT 10H
 RET
 GRAPHIC_MODE ENDP
@@ -127,6 +146,62 @@ MOV BH, PAG ;PAGINA
 INT 10H
 ENDM
 ;---------------------------------------------------------
+SET_BODY_PARAMETERS MACRO POSX, POSY, XSIZE, YSIZE, COLOR
+CALL REGCLEAN
+MOV AX, POSX
+MOV BX, POSY
+MOV TEMP1, AX
+MOV TEMP2, BX
+CALL REGCLEAN
+MOV AX, XSIZE
+MOV BX, YSIZE
+MOV COUNT3, AX
+MOV COUNT4, BX
+MOV TEMPDB1, COLOR
+ENDM
+;---------------------------------------------------------
+DRAW_WIDTH:
+CALL REGCLEAN
+PIXEL_DRAW TEMPDB1, 00H, TEMP1, TEMP2
+INC COUNT
+INC TEMP1
+MOV BX, COUNT
+CMP BX, COUNT3
+JNG DRAW_WIDTH
+RET
+;---------------------------------------------------------
+DRAW_HEIGHT:
+CALL REGCLEAN
+MOV AX, TEMP1
+SUB AX, COUNT3
+SUB AX, 1
+MOV TEMP1, AX
+INC TEMP2
+MOV COUNT, 0
+RET
+;---------------------------------------------------------
+DRAW_BODY:
+CALL DRAW_WIDTH
+CALL DRAW_HEIGHT
+INC COUNT2
+MOV BX, COUNT2
+CMP BX, COUNT4
+JNG DRAW_BODY
+RET
+;---------------------------------------------------------
+RESET_COUNTERS: ;Método que se encarga de resetear las variables usadas como contadores
+MOV COUNT, 0
+MOV COUNT2, 0
+MOV COUNT3, 0
+MOV COUNT4, 0
+RET
+;---------------------------------------------------------
+RESET_TEMPS: ;Método que se encarga de resetear las variables usadas como temporales
+MOV TEMP1, 0
+MOV TEMP2, 0
+MOV TEMP3, 0
+RET
+;---------------------------------------------------------
 ;---------------------------------------------------------
 ;---------------------------------------------------------
 ;---------------------------------------------------------
@@ -135,6 +210,32 @@ MAIN PROC FAR
 ;---------------------------------------------------------
 .STARTUP
 CALL UPLOADDATA
+;---------------------------------------------------------
+CALL CLEANSCREEN
+CALL GRAPHIC_MODE
+CALL CLEARVIDEOSCREEN
+;---------------------------------------------------------
+
+CALL RESET_COUNTERS
+CALL RESET_TEMPS
+
+SET_BODY_PARAMETERS 50, 20, 220, 160, 07H ; Buen tamaño calculadora 220x160
+
+CALL DRAW_BODY
+
+CALL RESET_COUNTERS
+CALL RESET_TEMPS
+MOVE_CURSOR 28, 5  ;Ubicaciones Números
+SCREEN_CHAR_PRINT 31H
+MOVE_CURSOR 29, 5
+SCREEN_CHAR_PRINT 32H
+MOVE_CURSOR 30, 5
+SCREEN_CHAR_PRINT 33H
+MOVE_CURSOR 31, 5
+SCREEN_CHAR_PRINT 34H
+CALL KEY_NO_ECO
+CALL EXITPROGRAM
+;---------------------------------------------------------
 ;---------------------------------------------------------
 MAIN ENDP
 END MAIN
