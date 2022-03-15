@@ -1,9 +1,9 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 0017DH 0017EH WINCALCU_TEXT      CODE
- 00180H 00192H 00013H _DATA              DATA
- 001A0H 001DFH 00040H STACK              STACK
+ 00000H 001FAH 001FBH WINCALCU_TEXT      CODE
+ 00200H 0021DH 0001EH _DATA              DATA
+ 00220H 0025FH 00040H STACK              STACK
 
   Address         Publics by Name
 
