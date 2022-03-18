@@ -19,6 +19,23 @@ TEMP3 DW 0
 TEMPDB1 DB 0
 TEMPDB2 DW 0
 TEMPDB3 DW 0
+TEMPRESNUM1 DB 0
+TEMPRESNUM2 DB 0
+RESULTTEMP1 DB 0
+RESULTTEMP2 DB 0
+NUM1 DB 0
+NUM2 DB 0
+SIGN DB 0
+PLUS_ASCII DB 43 //Signo +
+MINUS_ASCII DB 45 //Signo -
+ASTERISK_ASCII DB 42 //Signo *
+SLASH_ASCII DB 47 //Signo /
+EQUALS_ASCII DB 61 //Signo =
+ENTER_ASCII DB 13 //Tecla ENTER
+BACKSPACE_ASCII DB 8 //Tecla Borrar (Backspace)
+ESCAPE_ASCII DB 27 //Tecla ESC
+X_ASCII DB 88
+x_ASCII DB 120
 PROGRAMNAME DB "CALCULATOR","$"
 VIDEO_SEG 	SEGMENT AT 0A000H
 VID_AREA	DB		1000 DUP (?) ;Esto se comentará temporalmente
@@ -203,7 +220,39 @@ MOV TEMP2, 0
 MOV TEMP3, 0
 RET
 ;---------------------------------------------------------
+SUM:
+CALL REGCLEAN
+MOV AL, NUM1
+ADD AL, NUM2
+MOV TEMPRESNUM, AX
+RET
 ;---------------------------------------------------------
+SUBSTRACTION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+SUB AL, BL
+MOV TEMPRESNUM, AX
+RET
+;---------------------------------------------------------
+MULTIPLICATION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+MUL BL
+MOV TEMPRESNUM, AX
+RET
+;---------------------------------------------------------
+DIVISION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+DIV BL
+MOV RESULTTEMP1, AL
+MOV RESULTTEMP2, AH
+RET
+;---------------------------------------------------------
+
 ;---------------------------------------------------------
 ;---------------------------------------------------------
 ;=========================================================
