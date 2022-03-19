@@ -383,7 +383,6 @@ DB 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 DB 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 DB 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 
-
 ;---------------------------------------------------------
 ;=========================================================
 .CODE
@@ -599,7 +598,6 @@ XOR DX, DX
 
 MOV DI, POSX
 CALL DRAWING_MAP
-
 ENDM
 ;---------------------------------------------------------
 RESET_COUNTERS: ;Método que se encarga de resetear las variables usadas como contadores
@@ -638,49 +636,22 @@ MOV XORIGIN, 31200
 DRAW_PIXEL_MAP CALCULATORMAP4, 110, 85
 ;++++++++++++++++++++++++++
 ;---------------------------------------------------------
-
-;CALL RESET_COUNTERS
-;CALL RESET_TEMPS
-
-;SET_BODY_PARAMETERS 50, 12, 220, 172, 07H ; Buen tamaño calculadora 220x160, Nueva dimension 220x172
-
-;CALL DRAW_BODY
-
-;CALL RESET_COUNTERS
-;CALL RESET_TEMPS
-;---------------------------------------------------------
-;SET_BODY_PARAMETERS 50, 12, 220, 15, 01H; Barra con tamaño de 220*15
-;CALL DRAW_BODY
-
-;CALL RESET_COUNTERS
-;CALL RESET_TEMPS
-
 ;++++++++++++++++++++++++++
-MOVE_CURSOR 28, 7  ;Ubicaciones Números
-SCREEN_CHAR_PRINT 31H
-MOVE_CURSOR 29, 7
-SCREEN_CHAR_PRINT 32H
-MOVE_CURSOR 30, 7
-SCREEN_CHAR_PRINT 33H
-MOVE_CURSOR 31, 7
-SCREEN_CHAR_PRINT 34H
+;MOVE_CURSOR 28, 7  ;Ubicaciones Números
+;SCREEN_CHAR_PRINT 31H
+;MOVE_CURSOR 29, 7
+;SCREEN_CHAR_PRINT 32H
+;MOVE_CURSOR 30, 7
+;SCREEN_CHAR_PRINT 33H
+;MOVE_CURSOR 31, 7
+;SCREEN_CHAR_PRINT 34H
 ;++++++++++++++++++++++++++
 MOVE_CURSOR 7, 2
 MSJSHOW PROGRAMNAME
 ;++++++++++++++++++++++++++
 MOVE_CURSOR 0, 0
 ;++++++++++++++++++++++++++
-;CALL RESET_COUNTERS
-;CALL RESET_TEMPS
 
-;SET_BODY_PARAMETERS 255, 14, 10, 11, 0CH ; Cuadro de X con tamaño de 10*11
-
-;CALL DRAW_BODY
-
-;CALL RESET_COUNTERS
-;CALL RESET_TEMPS
-;++++++++++++++++++++++++++
-;CALL CLEARVIDEOSCREEN
 ;++++++++++++++++++++++++++
 CALL KEY_NO_ECO
 CALL EXITPROGRAM
