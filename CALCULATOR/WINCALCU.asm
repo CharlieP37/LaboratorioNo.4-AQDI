@@ -846,7 +846,63 @@ CALL CLEARBUFFER
 
 CMP COUNT1, 2
 JL SET_NUM2
+
+JMP DO_OPERATION
 ;---------------------------------------------------------
+DO_OPERATION:
+CALL KEY_NO_ECO
+CMP AL, 13
+JNE DO_OPERATION
+CALL CLEARBUFFER
+JMP VERIFY_OPERATION
+;---------------------------------------------------------
+VERIFY_OPERATION:
+CMP OPERATION, 1
+JE SUM
+CMP OPERATION, 1
+JE SUBSTRACTION
+CMP OPERATION, 1
+JE MULTIPLICATION
+JMP DIVISION
+;---------------------------------------------------------
+SUM:
+CALL REGCLEAN
+MOV AL, NUM1
+ADD AL, NUM2
+MOV RESULTTEMP1DW, AX
+;IR A RESULTADO
+JMP EXIT ;TEMPORAL
+;---------------------------------------------------------
+SUBSTRACTION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+SUB AL, BL
+MOV RESULTTEMP1DW, AX
+;IR A RESULTADO
+JMP EXIT ;TEMPORAL
+;---------------------------------------------------------
+MULTIPLICATION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+MUL BL
+MOV RESULTTEMP1DW, AX
+;IR A RESULTADO
+JMP EXIT ;TEMPORAL
+;---------------------------------------------------------
+DIVISION:
+CALL REGCLEAN
+MOV AL, NUM1
+MOV BL, NUM2
+DIV BL
+MOV RESULTTEMP1DB, AL
+MOV RESULTTEMP2DB, AH
+;IR A RESULTADO
+JMP EXIT ;TEMPORAL
+;---------------------------------------------------------
+;---------------------------------------------------------
+EXIT:
 CALL KEY_NO_ECO
 CALL EXITPROGRAM
 CALCULATORFUNCTION ENDP
