@@ -1,0 +1,15 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00435H 00436H WINCALCU_TEXT      CODE
+ 00440H 00463H 00024H _DATA              DATA
+ 00470H 004AFH 00040H STACK              STACK
+
+  Address         Publics by Name
+
+
+  Address         Publics by Value
+
+
+Program entry point at 0000:01E2
+

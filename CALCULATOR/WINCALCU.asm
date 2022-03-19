@@ -10,8 +10,6 @@
 .386
 ;=======================================================================
 ;---------------------------------------------------------
-<<<<<<< Updated upstream
-=======
 COUNT DW 0
 COUNT2 DW 0
 COUNT3 DW 0
@@ -31,7 +29,6 @@ PROGRAMNAME DB "CALCULATOR","$"
 VIDEO_SEG 	SEGMENT AT 0A000H
 VID_AREA	DB		1000 DUP (?) ;Esto se comentará temporalmente
 VIDEO_SEG 	ENDS
->>>>>>> Stashed changes
 ;---------------------------------------------------------
 ;=========================================================
 .CODE
@@ -61,6 +58,12 @@ RET
 MSJSHOW MACRO MSJ ;Función que se encarga de mostrar una cadena en pantalla
 MOV AH, 09H
 LEA DX, [MSJ]
+INT 21H
+ENDM
+;---------------------------------------------------------
+SCREEN_CHAR_PRINT MACRO CHAR
+MOV DL, CHAR
+MOV AH, 02H
 INT 21H
 ENDM
 ;---------------------------------------------------------
@@ -97,8 +100,8 @@ ENDM
 GRAPHIC_MODE PROC ;Procedimiento que ingresa al modo de video gráfico de 320x200
 AND BX, 00	
 MOV SI, 00
-MOV AH,00H					
-MOV AL,13H
+MOV AH, 00H					
+MOV AL, 13H
 INT 10H
 RET
 GRAPHIC_MODE ENDP
@@ -150,8 +153,6 @@ MOV BH, PAG ;PAGINA
 INT 10H
 ENDM
 ;---------------------------------------------------------
-<<<<<<< Updated upstream
-=======
 SET_BODY_PARAMETERS MACRO POSX, POSY, XSIZE, YSIZE, COLOR
 CALL REGCLEAN
 MOV AX, POSX
@@ -302,7 +303,6 @@ LIMPIAR_MOUSE:
 D90: RET
 MOUSEPOINTR ENDP
 ;---------------------------------------------------------
->>>>>>> Stashed changes
 ;---------------------------------------------------------
 ;---------------------------------------------------------
 ;---------------------------------------------------------
@@ -312,8 +312,6 @@ MAIN PROC FAR
 .STARTUP
 CALL UPLOADDATA
 ;---------------------------------------------------------
-<<<<<<< Updated upstream
-=======
 CALL CLEANSCREEN
 CALL GRAPHIC_MODE
 CALL CLEARVIDEOSCREEN
@@ -436,7 +434,6 @@ FIN:
 		MOV		AX, 4C00H		; Fin
 		INT		21H
 ;---------------------------------------------------------
->>>>>>> Stashed changes
 MAIN ENDP
 END MAIN
 ;---------------------------------------------------------
