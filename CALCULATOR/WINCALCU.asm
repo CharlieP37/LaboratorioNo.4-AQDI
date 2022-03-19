@@ -7,18 +7,40 @@
 .MODEL LARGE
 .STACK 64
 .DATA
+.386
 ;=======================================================================
 ;---------------------------------------------------------
 COUNT DW 0
+COUNT1 DW 0
 COUNT2 DW 0
 COUNT3 DW 0
 COUNT4 DW 0
+COUNTPOSITION DB 32
+COUNTSIZE DW 00
 TEMP1 DW 0
 TEMP2 DW 0
 TEMP3 DW 0
 TEMPDB1 DB 0
-TEMPDB2 DW 0
-TEMPDB3 DW 0
+TEMPDB2 DB 0
+TEMPDB3 DB 0
+RESULTTEMP1DB DB 0
+RESULTTEMP2DB DB 0
+RESULTTEMP1DW DW 0
+RESULTTEMP2DW DW 0
+NUM1 DB 0
+NUM2 DB 0
+SIGN DB 0
+OPERATION DB 0
+PLUS_ASCII DB 43 ;Signo +
+MINUS_ASCII DB 45 ;Signo -
+ASTERISK_ASCII DB 42 ;Signo *
+SLASH_ASCII DB 47 ;Signo /
+EQUALS_ASCII DB 61 ;Signo =
+ENTER_ASCII DB 13 ;Tecla ENTER
+BACKSPACE_ASCII DB 8 ;Tecla Borrar (Backspace)
+ESCAPE_ASCII DB 27 ;Tecla ESC
+TEMPRESNUM DW 6 DUP (0), "$"
+TEMPNUMBERS DW 7 DUP (0), "$"
 POSX DW 0
 XORIGIN DW 3890
 PICHEIGHT DB 0
@@ -602,6 +624,7 @@ ENDM
 ;---------------------------------------------------------
 RESET_COUNTERS: ;Método que se encarga de resetear las variables usadas como contadores
 MOV COUNT, 0
+MOV COUNT1, 0
 MOV COUNT2, 0
 MOV COUNT3, 0
 MOV COUNT4, 0
@@ -613,6 +636,220 @@ MOV TEMP2, 0
 MOV TEMP3, 0
 RET
 ;---------------------------------------------------------
+SAVE_NUM1PRO PROC
+;++++++++++++++++++
+MOV TEMPDB1, AL
+;++++++++++++++++++
+XOR BX, BX
+MOV BL, TEMPDB1
+PUSH BX ;Guardara el numero
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+SUB TEMPDB1, 30H
+MOV BL, TEMPDB1
+ADD NUM1, BL
+CALL RESET_TEMPS
+INC COUNT1
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+RET
+SAVE_NUM1PRO ENDP
+;---------------------------------------------------------
+CALCULATORFUNCTION PROC
+
+;CALL KEY_NO_ECO
+;CALL EXITPROGRAM
+
+MOV COUNT1, 0
+;---------------------------------------------------------
+SET_NUM1:
+
+CALL KEY_NO_ECO
+;MOVE_CURSOR 31, 7
+;SCREEN_CHAR_PRINT AL
+;CALL CLEARBUFFER
+CMP AL, 30H
+JE SAVE_NUM1
+CMP AL, 31H
+JE SAVE_NUM1
+CMP AL, 32H
+JE SAVE_NUM1
+CMP AL, 33H
+JE SAVE_NUM1
+CMP AL, 34H
+JE SAVE_NUM1
+CMP AL, 35H
+JE SAVE_NUM1
+CMP AL, 36H
+JE SAVE_NUM1
+CMP AL, 37H
+JE SAVE_NUM1
+CMP AL, 38H
+JE SAVE_NUM1
+CMP AL, 39H
+JE SAVE_NUM1
+CMP AL, PLUS_ASCII
+JE SET_OPERATION
+CMP AL, MINUS_ASCII
+JE SET_OPERATION
+CMP AL, ASTERISK_ASCII
+JE SET_OPERATION
+CMP AL, SLASH_ASCII
+JE SET_OPERATION
+
+CALL CLEARBUFFER
+
+CMP COUNT1, 2
+JL SET_NUM1
+
+;---------------------------------------------------------
+SAVE_NUM1:
+MOV TEMPDB1, AL
+;++++++++++++++++++
+XOR BX, BX
+MOV BL, TEMPDB1
+PUSH BX ;Guardara el numero
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+SUB TEMPDB1, 30H
+MOV BL, TEMPDB1
+ADD NUM1, BL
+CALL RESET_TEMPS
+INC COUNT1
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+
+CMP COUNT1, 2
+JL SET_NUM1
+;---------------------------------------------------------
+CALL KEY_NO_ECO
+
+SET_OPERATION:
+CMP AL, PLUS_ASCII
+JE SET_SUM
+CMP AL, MINUS_ASCII
+JE SET_SUSTRACT
+CMP AL, ASTERISK_ASCII
+JE SET_MULTIPLY
+CMP AL, SLASH_ASCII
+JE SET_DIVIDE
+;---------------------------------------------------------
+SET_SUM:
+MOV OPERATION, 1
+;PUSH PLUS_ASCII
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+PUSH 43
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+MOV COUNT1, 0
+JMP SET_NUM2
+;---------------------------------------------------------
+SET_SUSTRACT:
+MOV OPERATION, 2
+;PUSH MINUS_ASCII
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+PUSH 45
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+MOV COUNT1, 0
+JMP SET_NUM2
+;---------------------------------------------------------
+SET_MULTIPLY:
+MOV OPERATION, 3
+;PUSH ASTERISK_ASCII
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+PUSH 42
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+MOV COUNT1, 0
+JMP SET_NUM2
+;---------------------------------------------------------
+SET_DIVIDE:
+MOV OPERATION, 4
+;PUSH SLASH_ASCII
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+PUSH 47
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+MOV COUNT1, 0
+JMP SET_NUM2
+;---------------------------------------------------------
+
+SET_NUM2:
+CALL KEY_NO_ECO
+CMP AL, 30H
+JE SAVE_NUM2
+CMP AL, 31H
+JE SAVE_NUM2
+CMP AL, 32H
+JE SAVE_NUM2
+CMP AL, 33H
+JE SAVE_NUM2
+CMP AL, 34H
+JE SAVE_NUM2
+CMP AL, 35H
+JE SAVE_NUM2
+CMP AL, 36H
+JE SAVE_NUM2
+CMP AL, 37H
+JE SAVE_NUM2
+CMP AL, 38H
+JE SAVE_NUM2
+CMP AL, 39H
+JE SAVE_NUM2
+
+CALL CLEARBUFFER
+
+CMP COUNT1, 2
+JL SET_NUM2
+;---------------------------------------------------------
+SAVE_NUM2:
+MOV TEMPDB1, AL
+;++++++++++++++++++
+XOR BX, BX
+MOV BL, TEMPDB1
+PUSH BX ;Guardara el numero
+;++++++++++++++++++
+MOVE_CURSOR 31, 7
+SCREEN_CHAR_PRINT AL
+;++++++++++++++++++
+SUB TEMPDB1, 30H
+MOV BL, TEMPDB1
+ADD NUM2, BL
+CALL RESET_TEMPS
+INC COUNT1
+DEC COUNTPOSITION
+INC COUNTSIZE
+CALL CLEARBUFFER
+
+CMP COUNT1, 2
+JL SET_NUM2
+;---------------------------------------------------------
+CALL KEY_NO_ECO
+CALL EXITPROGRAM
+CALCULATORFUNCTION ENDP
 ;---------------------------------------------------------
 ;---------------------------------------------------------
 ;---------------------------------------------------------
@@ -649,9 +886,9 @@ DRAW_PIXEL_MAP CALCULATORMAP4, 110, 85
 MOVE_CURSOR 7, 2
 MSJSHOW PROGRAMNAME
 ;++++++++++++++++++++++++++
-MOVE_CURSOR 0, 0
+;MOVE_CURSOR 0, 0
 ;++++++++++++++++++++++++++
-
+CALL CALCULATORFUNCTION
 ;++++++++++++++++++++++++++
 CALL KEY_NO_ECO
 CALL EXITPROGRAM
