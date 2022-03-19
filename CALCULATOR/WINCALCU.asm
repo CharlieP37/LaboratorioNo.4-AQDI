@@ -7,6 +7,7 @@
 .MODEL LARGE
 .STACK 64
 .DATA
+.386
 ;=======================================================================
 ;---------------------------------------------------------
 COUNT DW 0
@@ -14,12 +15,13 @@ COUNT2 DW 0
 COUNT3 DW 0
 COUNT4 DW 0
 COUNTPOSITION DB 32
+COUNTSIZE DW 00
 TEMP1 DW 0
 TEMP2 DW 0
 TEMP3 DW 0
 TEMPDB1 DB 0
-TEMPDB2 DW 0
-TEMPDB3 DW 0
+TEMPDB2 DB 0
+TEMPDB3 DB 0
 RESULTTEMP1DB DB 0
 RESULTTEMP2DB DB 0
 RESULTTEMP1DW DW 0
@@ -28,16 +30,16 @@ NUM1 DB 0
 NUM2 DB 0
 SIGN DB 0
 OPERATION DB 0
-PLUS_ASCII DB 43 //Signo +
-MINUS_ASCII DB 45 //Signo -
-ASTERISK_ASCII DB 42 //Signo *
-SLASH_ASCII DB 47 //Signo /
-EQUALS_ASCII DB 61 //Signo =
-ENTER_ASCII DB 13 //Tecla ENTER
-BACKSPACE_ASCII DB 8 //Tecla Borrar (Backspace)
-ESCAPE_ASCII DB 27 //Tecla ESC
-X_ASCII DB 88
-x_ASCII DB 120
+PLUS_ASCII DB 43 ;Signo +
+MINUS_ASCII DB 45 ;Signo -
+ASTERISK_ASCII DB 42 ;Signo *
+SLASH_ASCII DB 47 ;Signo /
+EQUALS_ASCII DB 61 ;Signo =
+ENTER_ASCII DB 13 ;Tecla ENTER
+BACKSPACE_ASCII DB 8 ;Tecla Borrar (Backspace)
+ESCAPE_ASCII DB 27 ;Tecla ESC
+;X_ASCII DB 88
+;x_ASCII DB 120
 TEMPRESNUM DW 6 DUP (0), "$"
 TEMPNUMBERS DW 7 DUP (0), "$"
 PROGRAMNAME DB "CALCULATOR","$"
@@ -264,52 +266,62 @@ SET_SIGN_NEGATIVE:
 MOV SIGN, 1
 RET
 ;---------------------------------------------------------
-SHOW_NUMBERS MACRO POSITION, ARRAY
-
-ENDM
-;---------------------------------------------------------
 SAVE_NUM1:
-MOV TEMP1, AL
-SUB TEMP1, 30H
-ADD NUM1, TEMP1M
+MOV TEMPDB1, AL
+;PUSH TEMPDB1
+SUB TEMPDB1, 30H
+MOV BL, TEMPDB1
+ADD NUM1, BL
 CALL RESET_TEMPS
 CALL CLEARBUFFER
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SAVE_NUM2:
-MOV TEMP1, AL
-SUB TEMP1, 30H
-ADD NUM2, TEMP1
+MOV TEMPDB1, AL
+;PUSH TEMPDB1
+SUB TEMPDB1, 30H
+MOV BL, TEMPDB1
+ADD NUM2, BL
 CALL RESET_TEMPS
 CALL CLEARBUFFER
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SET_SUM:
 MOV OPERATION, 1
+;PUSH PLUS_ASCII
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SET_SUSTRACT:
 MOV OPERATION, 2
+;PUSH MINUS_ASCII
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SET_MULTIPLY:
 MOV OPERATION, 3
+;PUSH ASTERISK_ASCII
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SET_DIVIDE:
 MOV OPERATION, 4
+;PUSH SLASH_ASCII
 INC CX
-DEC COUNTSIZE
+DEC COUNTPOSITION
+INC COUNTSIZE
 RET
 ;---------------------------------------------------------
 SHOWNUM:
@@ -319,7 +331,8 @@ MOV AX, RESULTTEMP1DW
 MOV TEMP1, AX
 CALL REORDER_NUMBER_TO_DISPLAY
 MOV SI, 0
-MOV CX, COUNT4
+;MOV CX, COUNT4
+MOV CX, 0
 MOV SI, OFFSET TEMPRESNUM
 CALL SAVE_TO_ARRAY
 RET
@@ -332,8 +345,8 @@ MOV BL, 10
 DIV BL
 ;++++++++++++++++
 ADD AH, 30H
-PUSH AH
-//MOV [SI], AH
+;PUSH AH
+MOV [SI], AH
 MOV AH, 0
 MOV TEMP1, AX
 ;++++++++++++++++
@@ -348,16 +361,31 @@ RET
 ;---------------------------------------------------------
 INCSI_FOR_DEC_TO:
 INC SI
-CALL DEC_TO_BIN_OR_HEX
+CALL REORDER_NUMBER_TO_DISPLAY
 RET
 ;---------------------------------------------------------
 SAVE_TO_ARRAY:
-POP [SI]
+;POP [SI]
 INC SI
 INC CX
 CMP CX, COUNT4
 JLE SAVE_TO_ARRAY
 RET
+;---------------------------------------------------------
+SHOW_NUMBERS MACRO TIMES, POSITION, ARRAY
+CALL REGCLEAN
+MOV SI, 0
+MOV SI, OFFSET ARRAY
+MOV CX, 0
+MOVE:
+;POP [SI]
+INC SI
+INC CX
+CMP CX, TIMES
+JLE MOVE
+MOVE_CURSOR POSITION, 5
+MSJSHOW ARRAY
+ENDM
 ;---------------------------------------------------------
 ;---------------------------------------------------------
 ;---------------------------------------------------------
@@ -459,6 +487,8 @@ JE CONFIRM_OPERATION
 
 CMP CX, 2
 JNE SET_NUM2
+
+SHOW_NUMBERS COUNTSIZE, COUNTPOSITION, TEMPNUMBERS
 
 CONFIRM_OPERATION:
 CMP CX, 0
