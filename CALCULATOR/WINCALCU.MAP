@@ -1,9 +1,9 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 004C7H 004C8H WINCALCU_TEXT      CODE
- 004D0H 098FCH 0942DH _DATA              DATA
- 09900H 0993FH 00040H STACK              STACK
+ 00000H 00576H 00577H WINCALCU_TEXT      CODE
+ 00580H 099ACH 0942DH _DATA              DATA
+ 099B0H 099EFH 00040H STACK              STACK
 
   Address         Publics by Name
 
@@ -11,5 +11,5 @@
   Address         Publics by Value
 
 
-Program entry point at 0000:0366
+Program entry point at 0000:0415
 
